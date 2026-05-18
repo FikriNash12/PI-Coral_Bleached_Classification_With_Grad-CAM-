@@ -4,4 +4,8 @@ numpy
 opencv_python
 Pillow
 streamlit
-tensorflow
+tensorflow-cpu
+seaborn
+scikit-learn
+pandas
+datasets
