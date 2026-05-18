@@ -1,11 +1,7 @@
+gdown
+matplotlib
+numpy
+opencv_python
+Pillow
 streamlit
 tensorflow
-numpy
-opencv-python-headless
-Pillow
-matplotlib
-seaborn
-pandas
-scikit-learn
-datasets
-gdown
