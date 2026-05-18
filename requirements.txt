@@ -1,0 +1,8 @@
+gdown==6.0.0
+matplotlib==3.8.0
+numpy==2.4.5
+opencv_python==4.10.0.84
+Pillow==10.1.0
+Pillow==12.2.0
+streamlit==1.56.0
+tensorflow==2.20.0
