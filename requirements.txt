@@ -1,11 +1,7 @@
 gdown
 matplotlib
 numpy
+onnxruntime
 opencv_python
 Pillow
 streamlit
-tensorflow-cpu
-seaborn
-scikit-learn
-pandas
-datasets
