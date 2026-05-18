@@ -2,6 +2,6 @@ gdown
 matplotlib
 numpy
 onnxruntime
-opencv_python
+opencv-python
 Pillow
 streamlit
