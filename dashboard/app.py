@@ -64,7 +64,7 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 # CONSTANTS
 # ─────────────────────────────────────────
 IMG_SIZE = (128, 128)
-MODEL_PATH = "cnn_coral_bleaching_best.keras"
+MODEL_PATH = "dashboard/cnn_coral_bleaching_best.keras"
 
 # ─────────────────────────────────────────
 # LOAD MODEL
@@ -176,10 +176,10 @@ def show_result(pred_label, pred_prob, bleach_pct, img, heatmap, superimposed):
 # SAMPLE IMAGES
 # ─────────────────────────────────────────
 SAMPLE_IMAGES = [
-    {"path": "samples/noaa_healthy.jpg",  "label": "Healthy",  "source": "NOAA-PIFSC"},
-    {"path": "samples/cs_healthy.jpg",    "label": "Healthy",  "source": "Coralscapes"},
-    {"path": "samples/noaa_bleached.jpg", "label": "Bleached", "source": "NOAA-PIFSC"},
-    {"path": "samples/cs_bleached.jpg",   "label": "Bleached", "source": "Coralscapes"},
+    {"path": "dashboard/samples/noaa_healthy.jpg",  "label": "Healthy",  "source": "NOAA-PIFSC"},
+    {"path": "dashboard/samples/cs_healthy.jpg",    "label": "Healthy",  "source": "Coralscapes"},
+    {"path": "dashboard/samples/noaa_bleached.jpg", "label": "Bleached", "source": "NOAA-PIFSC"},
+    {"path": "dashboard/samples/cs_bleached.jpg",   "label": "Bleached", "source": "Coralscapes"},
 ]
 
 # ─────────────────────────────────────────
