@@ -1,7 +1,9 @@
 import streamlit as st
 import numpy as np
-import onnxruntime as ort
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from PIL import Image
 import os
 
@@ -62,15 +64,14 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 # CONSTANTS
 # ─────────────────────────────────────────
 IMG_SIZE = (128, 128)
-MODEL_PATH = "cnn_coral_bleaching_best.onnx"
+MODEL_PATH = "cnn_coral_bleaching_best.keras"
 
 # ─────────────────────────────────────────
 # LOAD MODEL
 # ─────────────────────────────────────────
 @st.cache_resource
 def load_cnn_model():
-    session = ort.InferenceSession(MODEL_PATH, providers=["CPUExecutionProvider"])
-    return session
+    return load_model(MODEL_PATH)
 
 # ─────────────────────────────────────────
 # HELPER FUNCTIONS
@@ -80,55 +81,53 @@ def preprocess_image(img_array):
     img_pil = img_pil.resize(IMG_SIZE, Image.BILINEAR)
     return np.array(img_pil)
 
-def make_gradcam_heatmap(img_array, session):
-    """Occlusion-based saliency map — tidak butuh backprop"""
-    input_name = session.get_inputs()[0].name
-    base_prob = session.run(None, {input_name: img_array})[0][0][0]
+def make_gradcam_heatmap(img_array, model, last_conv_layer_name='last_conv_layer'):
+    img_tensor = tf.cast(img_array, tf.float32)
+    layer_names = [l.name for l in model.layers]
+    conv_idx = layer_names.index(last_conv_layer_name)
+    pre_conv_layers = model.layers[:conv_idx + 1]
+    post_conv_layers = model.layers[conv_idx + 1:]
 
-    grid = 8
-    cell_h, cell_w = IMG_SIZE[0] // grid, IMG_SIZE[1] // grid
-    heatmap = np.zeros((grid, grid), dtype=np.float32)
+    with tf.GradientTape() as tape:
+        x = img_tensor
+        for layer in pre_conv_layers:
+            x = layer(x)
+        conv_output = x
+        tape.watch(conv_output)
+        for layer in post_conv_layers:
+            x = layer(x)
+        preds = x
+        class_channel = preds[:, 0]
 
-    for i in range(grid):
-        for j in range(grid):
-            occluded = img_array.copy()
-            occluded[0, i*cell_h:(i+1)*cell_h, j*cell_w:(j+1)*cell_w, :] = 128.0
-            prob = session.run(None, {input_name: occluded})[0][0][0]
-            heatmap[i, j] = base_prob - prob
-
-    heatmap = np.maximum(heatmap, 0)
-    if heatmap.max() > 0:
-        heatmap = heatmap / heatmap.max()
-    return heatmap
+    grads = tape.gradient(class_channel, conv_output)
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    heatmap = conv_output[0] @ pooled_grads[..., tf.newaxis]
+    heatmap = tf.squeeze(heatmap)
+    heatmap = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
+    return heatmap.numpy()
 
 def estimate_bleaching_percentage(img):
-    # Konversi RGB ke HSV manual pakai colorsys
     r, g, b = img[:,:,0]/255.0, img[:,:,1]/255.0, img[:,:,2]/255.0
     maxc = np.maximum(np.maximum(r, g), b)
     minc = np.minimum(np.minimum(r, g), b)
-    v = maxc
     s = np.where(maxc != 0, (maxc - minc) / maxc, 0)
-    # Piksel putih/pucat: saturation rendah, value tinggi
+    v = maxc
     mask = (s < (60/255.0)) & (v > (170/255.0))
     return (np.sum(mask) / mask.size) * 100
 
-def predict_and_visualize(img_rgb, session):
+def predict_and_visualize(img_rgb, model):
     img = preprocess_image(img_rgb)
-    img_array = np.expand_dims(img, axis=0).astype(np.float32)
+    img_array = np.expand_dims(img, axis=0)
+    img_tensor = tf.cast(img_array, tf.float32)
 
-    input_name = session.get_inputs()[0].name
-    pred_prob = float(session.run(None, {input_name: img_array})[0][0][0])
+    pred_prob = float(model.predict(img_tensor, verbose=0)[0][0])
     pred_label = "Bleached" if pred_prob > 0.5 else "Healthy"
     bleach_pct = estimate_bleaching_percentage(img)
-    heatmap = make_gradcam_heatmap(img_array, session)
 
-    # Resize heatmap
+    heatmap = make_gradcam_heatmap(img_tensor, model)
     heatmap_pil = Image.fromarray(np.uint8(255 * heatmap)).resize(IMG_SIZE, Image.BILINEAR)
     heatmap_resized = np.array(heatmap_pil) / 255.0
-    # Apply JET colormap via matplotlib
-    import matplotlib.cm as cm
     heatmap_colored = np.uint8(cm.jet(heatmap_resized)[:, :, :3] * 255)
-    # Superimpose
     superimposed = np.uint8(img * 0.6 + heatmap_colored * 0.4)
 
     return pred_label, pred_prob, bleach_pct, img, heatmap_resized, superimposed
@@ -144,7 +143,7 @@ def show_result(pred_label, pred_prob, bleach_pct, img, heatmap, superimposed):
         ax.axis('off')
         st.pyplot(fig, use_container_width=True)
         plt.close()
-        st.caption("Saliency Heatmap")
+        st.caption("Grad-CAM Heatmap")
     with col3:
         st.image(superimposed, caption="Superimposed", use_container_width=True)
 
@@ -157,7 +156,7 @@ def show_result(pred_label, pred_prob, bleach_pct, img, heatmap, superimposed):
         """, unsafe_allow_html=True)
         st.markdown("""
         <div class="info-box">
-        ⚠️ <b>Karang terdeteksi mengalami pemutihan (bleaching).</b> Pemutihan karang terjadi ketika karang melepaskan alga simbiotik (zooxanthellae) akibat tekanan suhu air laut yang meningkat. Area yang ditandai heatmap merupakan region yang paling berpengaruh terhadap keputusan model.
+        ⚠️ <b>Karang terdeteksi mengalami pemutihan (bleaching).</b> Pemutihan karang terjadi ketika karang melepaskan alga simbiotik (zooxanthellae) akibat tekanan suhu air laut yang meningkat. Area yang ditandai heatmap merah merupakan region yang menjadi fokus model dalam mengambil keputusan.
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -192,13 +191,13 @@ st.markdown("""
 <div class="hero-wrapper">
     <div class="hero-title">Coral<span>Sense</span></div>
     <p class="hero-sub">
-        Sistem klasifikasi pemutihan terumbu karang berbasis <i>Convolutional Neural Network</i> dengan visualisasi saliency map untuk interpretasi keputusan model secara visual.
+        Sistem klasifikasi pemutihan terumbu karang berbasis <i>Convolutional Neural Network</i> dengan visualisasi Grad-CAM untuk interpretasi keputusan model secara visual.
     </p>
     <div class="badge-row">
         <span class="badge">🪸 NOAA-PIFSC Dataset</span>
         <span class="badge">🌊 Coralscapes Dataset</span>
         <span class="badge">🧠 Custom CNN</span>
-        <span class="badge">🔍 Saliency Map XAI</span>
+        <span class="badge">🔍 Grad-CAM XAI</span>
         <span class="badge">📊 Accuracy 82%</span>
     </div>
 </div>
@@ -284,7 +283,7 @@ with col2:
     st.markdown("""
     <div class="info-box">
     <b>Arsitektur Model</b><br>
-    Custom CNN 3-blok tanpa transfer learning, terdiri dari Conv2D → MaxPooling per blok, diikuti Dense layer dengan Dropout 0.5 dan L2 regularization. Occlusion-based saliency map digunakan untuk menginterpretasikan area fokus model dalam pengambilan keputusan klasifikasi.
+    Custom CNN 3-blok tanpa transfer learning, terdiri dari Conv2D → MaxPooling per blok, diikuti Dense layer dengan Dropout 0.5 dan L2 regularization. Visualisasi Grad-CAM digunakan untuk menginterpretasikan area fokus model dalam pengambilan keputusan klasifikasi.
     </div>
     """, unsafe_allow_html=True)
 
