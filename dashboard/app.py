@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import cv2
 import onnxruntime as ort
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -77,7 +76,9 @@ def load_cnn_model():
 # HELPER FUNCTIONS
 # ─────────────────────────────────────────
 def preprocess_image(img_array):
-    return cv2.resize(img_array, IMG_SIZE)
+    img_pil = Image.fromarray(img_array)
+    img_pil = img_pil.resize(IMG_SIZE, Image.BILINEAR)
+    return np.array(img_pil)
 
 def make_gradcam_heatmap(img_array, session):
     """Occlusion-based saliency map — tidak butuh backprop"""
@@ -101,9 +102,15 @@ def make_gradcam_heatmap(img_array, session):
     return heatmap
 
 def estimate_bleaching_percentage(img):
-    img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    mask = cv2.inRange(img_hsv, np.array([0, 0, 170]), np.array([180, 60, 255]))
-    return (np.sum(mask > 0) / mask.size) * 100
+    # Konversi RGB ke HSV manual pakai colorsys
+    r, g, b = img[:,:,0]/255.0, img[:,:,1]/255.0, img[:,:,2]/255.0
+    maxc = np.maximum(np.maximum(r, g), b)
+    minc = np.minimum(np.minimum(r, g), b)
+    v = maxc
+    s = np.where(maxc != 0, (maxc - minc) / maxc, 0)
+    # Piksel putih/pucat: saturation rendah, value tinggi
+    mask = (s < (60/255.0)) & (v > (170/255.0))
+    return (np.sum(mask) / mask.size) * 100
 
 def predict_and_visualize(img_rgb, session):
     img = preprocess_image(img_rgb)
@@ -115,10 +122,14 @@ def predict_and_visualize(img_rgb, session):
     bleach_pct = estimate_bleaching_percentage(img)
     heatmap = make_gradcam_heatmap(img_array, session)
 
-    heatmap_resized = cv2.resize(heatmap, IMG_SIZE)
-    heatmap_colored = cv2.applyColorMap(np.uint8(255 * heatmap_resized), cv2.COLORMAP_JET)
-    heatmap_colored = cv2.cvtColor(heatmap_colored, cv2.COLOR_BGR2RGB)
-    superimposed = cv2.addWeighted(img, 0.6, heatmap_colored, 0.4, 0)
+    # Resize heatmap
+    heatmap_pil = Image.fromarray(np.uint8(255 * heatmap)).resize(IMG_SIZE, Image.BILINEAR)
+    heatmap_resized = np.array(heatmap_pil) / 255.0
+    # Apply JET colormap via matplotlib
+    import matplotlib.cm as cm
+    heatmap_colored = np.uint8(cm.jet(heatmap_resized)[:, :, :3] * 255)
+    # Superimpose
+    superimposed = np.uint8(img * 0.6 + heatmap_colored * 0.4)
 
     return pred_label, pred_prob, bleach_pct, img, heatmap_resized, superimposed
 
@@ -162,7 +173,9 @@ def show_result(pred_label, pred_prob, bleach_pct, img, heatmap, superimposed):
         </div>
         """, unsafe_allow_html=True)
 
+# ─────────────────────────────────────────
 # SAMPLE IMAGES
+# ─────────────────────────────────────────
 SAMPLE_IMAGES = [
     {"path": "samples/noaa_healthy.jpg",  "label": "Healthy",  "source": "NOAA-PIFSC"},
     {"path": "samples/cs_healthy.jpg",    "label": "Healthy",  "source": "Coralscapes"},
