@@ -1,7 +1,9 @@
-gdown
-matplotlib
-numpy
-onnxruntime
-opencv_python
-Pillow
 streamlit
+onnxruntime
+numpy
+Pillow
+matplotlib
+seaborn
+pandas
+scikit-learn
+gdown
