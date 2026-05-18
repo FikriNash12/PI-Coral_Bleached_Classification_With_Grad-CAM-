@@ -1,0 +1,41 @@
+# Dataset & Data Mentah
+Dataset/
+Corals Health/
+*.csv
+*.json
+*.parquet
+
+# # Model (kalau > 100MB)
+# *.keras
+# *.h5
+# *.pt
+# *.pth
+
+# Folder Pribadi
+Fikri/
+Jurnal/
+Paper/
+backup/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Editor & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit
+.streamlit/secrets.toml
