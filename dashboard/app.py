@@ -73,16 +73,6 @@ MODEL_PATH = "dashboard/cnn_coral_bleaching_best.keras"
 def load_cnn_model():
     return load_model(MODEL_PATH)
 
-# ── DEBUG SEMENTARA ──
-st.write("Layer names:", [l.name for l in model.layers])
-dummy = np.zeros((1, 128, 128, 3), dtype=np.float32)
-dummy_prob = float(model.predict(dummy, verbose=0)[0][0])
-st.write(f"Dummy prob (all zeros): {dummy_prob:.6f}")
-ones = np.ones((1, 128, 128, 3), dtype=np.float32) * 255
-ones_prob = float(model.predict(ones, verbose=0)[0][0])
-st.write(f"Dummy prob (all 255): {ones_prob:.6f}")
-# ── END DEBUG ──
-
 # ─────────────────────────────────────────
 # HELPER FUNCTIONS
 # ─────────────────────────────────────────
@@ -229,6 +219,16 @@ try:
 except Exception as e:
     st.error(f"Gagal memuat model: {e}")
     st.stop()
+
+# ── DEBUG SEMENTARA ──
+st.write("Layer names:", [l.name for l in model.layers])
+dummy = np.zeros((1, 128, 128, 3), dtype=np.float32)
+dummy_prob = float(model.predict(dummy, verbose=0)[0][0])
+st.write(f"Dummy prob (all zeros): {dummy_prob:.6f}")
+ones = np.ones((1, 128, 128, 3), dtype=np.float32) * 255
+ones_prob = float(model.predict(ones, verbose=0)[0][0])
+st.write(f"Dummy prob (all 255): {ones_prob:.6f}")
+# ── END DEBUG ──
 
 # ── SECTION 1: SAMPLE ──
 st.markdown('<div class="section-label">Contoh Prediksi</div>', unsafe_allow_html=True)
