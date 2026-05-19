@@ -64,7 +64,7 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 # CONSTANTS
 # ─────────────────────────────────────────
 IMG_SIZE = (128, 128)
-MODEL_PATH = "dashboard/cnn_coral_bleaching_best.keras"
+MODEL_PATH = "dashboard/cnn_coral_bleaching.keras"
 
 # ─────────────────────────────────────────
 # LOAD MODEL
@@ -207,9 +207,9 @@ st.markdown("""
 st.markdown("""
 <div class="metric-grid">
     <div class="metric-card"><div class="metric-val">82%</div><div class="metric-lbl">Accuracy</div></div>
-    <div class="metric-card"><div class="metric-val">0.81</div><div class="metric-lbl">Macro F1-Score</div></div>
-    <div class="metric-card"><div class="metric-val">0.78</div><div class="metric-lbl">Recall Bleached</div></div>
-    <div class="metric-card"><div class="metric-val">9.2K</div><div class="metric-lbl">Total Data Training</div></div>
+    <div class="metric-card"><div class="metric-val">0.82</div><div class="metric-lbl">Macro F1-Score</div></div>
+    <div class="metric-card"><div class="metric-val">0.82</div><div class="metric-lbl">Recall Bleached</div></div>
+    <div class="metric-card"><div class="metric-val">8.2K</div><div class="metric-lbl">Total Data Training</div></div>
 </div>
 """, unsafe_allow_html=True)
 
