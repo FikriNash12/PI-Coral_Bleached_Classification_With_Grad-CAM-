@@ -290,9 +290,24 @@ def page_metrics():
 # STREAMLIT NAVIGATION ROUTER
 # ─────────────────────────────────────────
 pg = st.navigation([
-    st.Page(page_predict, title="Analisis Citra", icon="🔮"),
-    st.Page(page_metrics, title="Metrik & Evaluasi", icon="📊")
+    st.Page(page_predict, title="Upload & Prediksi Kesehatan Karang", icon="🪸"),
+    st.Page(page_metrics, title="Analisis Citra", icon="📊")
 ])
+
+# Menambahkan judul/branding di bagian paling atas sidebar
+st.sidebar.markdown("""
+<div style="padding: 1.5rem 0rem 1rem 0rem;">
+    <h2 style="font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: #e8ede9; margin: 0; letter-spacing: -0.5px;">
+        Coral<span style="color: #20b464;">Sense</span>
+    </h2>
+    <p style="font-size: 0.75rem; color: #6b8c74; margin: 0.2rem 0 0 0; text-transform: uppercase; letter-spacing: 0.1em;">
+        Navigation Menu
+    </p>
+</div>
+<hr style="border: none; border-top: 1px solid #142e1f; margin-top: 0; margin-bottom: 1rem;">
+""", unsafe_allow_html=True)
+
+# Jalankan router halaman
 pg.run()
 
 # FOOTER CREDITS GLOBAL
