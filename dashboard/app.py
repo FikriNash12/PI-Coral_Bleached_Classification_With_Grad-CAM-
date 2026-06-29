@@ -289,10 +289,6 @@ def page_metrics():
 # ─────────────────────────────────────────
 # STREAMLIT NAVIGATION ROUTER
 # ─────────────────────────────────────────
-pg = st.navigation([
-    st.Page(page_predict, title="Upload & Prediksi Kesehatan Karang", icon="🪸"),
-    st.Page(page_metrics, title="Analisis Citra", icon="📊")
-])
 
 # Menambahkan judul/branding di bagian paling atas sidebar
 st.sidebar.markdown("""
@@ -306,6 +302,12 @@ st.sidebar.markdown("""
 </div>
 <hr style="border: none; border-top: 1px solid #142e1f; margin-top: 0; margin-bottom: 1rem;">
 """, unsafe_allow_html=True)
+
+# Navigasi halaman
+pg = st.navigation([
+    st.Page(page_metrics, title="Analisis Citra", icon="📊"),
+    st.Page(page_predict, title="Upload & Prediksi Kesehatan Karang", icon="🪸")
+])
 
 # Jalankan router halaman
 pg.run()
