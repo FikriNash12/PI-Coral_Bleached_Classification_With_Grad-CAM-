@@ -167,46 +167,8 @@ except Exception as e:
     st.error(f"Gagal memuat model: {e}")
     st.stop()
 
-
 # ─────────────────────────────────────────
-# PAGE 1: UPLOAD & PREDICTION VIEW
-# ─────────────────────────────────────────
-def page_predict():
-    st.markdown("""
-    <div class="hero-wrapper">
-        <div class="hero-title">Coral<span>Sense</span> Analisis</div>
-        <p class="hero-sub">
-            Unggah citra terumbu karang Anda untuk mendeteksi tingkat pemutihan secara real-time menggunakan arsitektur deep learning kustom yang didukung akuntabilitas Grad-CAM.
-        </p>
-        <div class="badge-row">
-            <span class="badge">🌐 Real-Time Inference</span>
-            <span class="badge">🧠 Custom CNN Loaded</span>
-            <span class="badge">🔍 Grad-CAM Region Mapping</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="section-label">Mesin Prediksi</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Upload Gambar Karang</div>', unsafe_allow_html=True)
-
-    uploaded = st.file_uploader(
-        "Upload gambar terumbu karang (JPG/PNG)",
-        type=["jpg", "jpeg", "png"],
-        label_visibility="collapsed"
-    )
-    st.markdown('<p class="upload-hint">Mendukung file berkstensi .jpg, .jpeg, dan .png. Gambar otomatis diproses ke dimensi target 128×128 piksel.</p>', unsafe_allow_html=True)
-
-    if uploaded is not None:
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        img_pil = Image.open(uploaded).convert("RGB")
-        img_rgb = np.array(img_pil)
-        with st.spinner("Mengekstrak fitur citra dan menjalankan konvolusi..."):
-            pred_label, pred_prob, bleach_pct, img, heatmap, superimposed = predict_and_visualize(img_rgb, model)
-        show_result(pred_label, pred_prob, bleach_pct, img, heatmap, superimposed)
-
-
-# ─────────────────────────────────────────
-# PAGE 2: METRICS & SAMPLE VIEW
+# PAGE 1: METRICS & SAMPLE VIEW
 # ─────────────────────────────────────────
 def page_metrics():
     st.markdown("""
@@ -251,6 +213,22 @@ def page_metrics():
         Arsitektur dibangun dari dasar tanpa transfer learning, menerapkan 3-blok interkoneksi konvolusi (Conv2D → MaxPool2D) dengan penambahan regularisasi L2 serta Dropout 0.5 pada fully-connected dense layer. Grad-CAM disuntikkan pada lapisan konvolusi terakhir untuk menjamin akuntabilitas prediksi.
         </div>
         """, unsafe_allow_html=True)
+        
+    # Warning / LIMITATIONS
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Keterbatasan Model</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Limitasi & Evaluasi Kritis</div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="info-box" style="border-left-color: #f59e0b; background: linear-gradient(135deg, #1f1505, #0a0f0d); border-top: 1px solid #453008; border-right: 1px solid #453008; border-bottom: 1px solid #453008;">
+        <strong style="color: #f59e0b; font-family: 'Syne', sans-serif; font-size: 1rem;">⚠️ CATATAN EVALUASI (LIMITASI MODEL)</strong><br><br>
+        <ul style="margin: 0; padding-left: 1.2rem; color: #a3b8a8; line-height: 1.7;">
+            <li><b>Akurasi Tidak 100%:</b> Model klasifikasi ini memiliki tingkat akurasi validasi sebesar <b>82%</b>. Prediksi yang dihasilkan bersifat probabilitas dan tidak lepas dari risiko <i>false positives</i> atau <i>false negatives</i>.</li>
+            <li><b>Indikasi Overfitting terhadap Kelas Healthy:</b> Berdasarkan distribusi dataset, model masih menunjukkan kecenderungan <i>overfitting</i> minor ke arah citra karang sehat (Healthy). Hal ini disebabkan oleh variasi visual karang sehat yang jauh lebih kaya (karena faktor keanekaragaman spesies dan morfologi alami) dibandingkan karakteristik visual karang bleaching yang cenderung monoton (didominasi warna putih pudar).</li>
+            <li><b>Rekomendasi Pengembangan:</b> Diperlukan strategi augmentasi data tingkat lanjut (seperti <i>Generative Adversarial Networks</i> / GANs) untuk menyeimbangkan representasi fitur visual pada kelas karang yang mengalami pemutihan.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
     # SAMPLES SCRIPT
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
@@ -285,21 +263,66 @@ def page_metrics():
     else:
         st.info("📁 Folder citra sampel tidak ditemukan. Letakkan file gambar pada direktori `dashboard/samples/` untuk memuat visualisasi otomatis.")
 
+# ─────────────────────────────────────────
+# PAGE 2: UPLOAD & PREDICTION VIEW
+# ─────────────────────────────────────────
+def page_predict():
+    st.markdown("""
+    <div class="hero-wrapper">
+        <div class="hero-title">Coral<span>Sense</span> Analisis</div>
+        <p class="hero-sub">
+            Unggah citra terumbu karang Anda untuk mendeteksi tingkat pemutihan secara real-time menggunakan arsitektur deep learning kustom yang didukung akuntabilitas Grad-CAM.
+        </p>
+        <div class="badge-row">
+            <span class="badge">🌐 Real-Time Inference</span>
+            <span class="badge">🧠 Custom CNN Loaded</span>
+            <span class="badge">🔍 Grad-CAM Region Mapping</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="section-label">Mesin Prediksi</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Upload Gambar Karang</div>', unsafe_allow_html=True)
+
+    # UPLOAD SCRIPT
+    uploaded = st.file_uploader(
+        "Upload gambar terumbu karang (JPG/PNG)",
+        type=["jpg", "jpeg", "png"],
+        label_visibility="collapsed"
+    )
+    st.markdown('<p class="upload-hint">Mendukung file berkstensi .jpg, .jpeg, dan .png. Gambar otomatis diproses ke dimensi target 128×128 piksel.</p>', unsafe_allow_html=True)
+
+    # PREDICTION SCRIPT
+    if uploaded is not None:
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        img_pil = Image.open(uploaded).convert("RGB")
+        img_rgb = np.array(img_pil)
+        with st.spinner("Mengekstrak fitur citra dan menjalankan konvolusi..."):
+            pred_label, pred_prob, bleach_pct, img, heatmap, superimposed = predict_and_visualize(img_rgb, model)
+        show_result(pred_label, pred_prob, bleach_pct, img, heatmap, superimposed)
+
+    # WARNINGS & LIMITATIONS
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="info-box" style="border-left-color: #f59e0b; background: linear-gradient(135deg, #1f1505, #0a0f0d); border-top: 1px solid #453008; border-right: 1px solid #453008; border-bottom: 1px solid #453008;">
+        <strong style="color: #f59e0b; font-family: 'Syne', sans-serif; font-size: 0.95rem;">⚠️ CATATAN EVALUASI & LIMITASI MODEL</strong><br><br>
+        <ul style="margin: 0; padding-left: 1.2rem; color: #a3b8a8; line-height: 1.6; font-size: 0.88rem;">
+            <li><b>Akurasi Validasi 82%:</b> Prediksi sistem didasarkan pada kalkulasi probabilitas fitur visual. Model tidak luput dari potensi kesalahan klasifikasi (<i>false positives / negatives</i>).</li>
+            <li><b>Kecenderungan Overfitting (Kelas Healthy):</b> Model memiliki sensitivitas yang lebih tinggi terhadap karakteristik terumbu karang sehat. Hal ini dipicu oleh sebaran data latih di mana variasi morfologi dan keanekaragaman visual pada kelas karang sehat jauh lebih masif ketimbang tekstur karang memutih (<i>bleaching</i>) yang cenderung seragam dan didominasi warna putih pudar.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # STREAMLIT NAVIGATION ROUTER
 # ─────────────────────────────────────────
-# 1. Definisikan dulu struktur halamannya
+# 1. Struktur halaman
 pages = [
     st.Page(page_metrics, title="Analisis & Evaluasi Citra", icon="📊"),
     st.Page(page_predict, title="Analisis & Prediksi Citra", icon="🪸")
 ]
 
-# 2. Paksa router untuk me-render manual menggunakan argument `position="sidebar"`
-# Ini akan memberikan kita kontrol penuh untuk menyisipkan elemen di atasnya
-pg = st.navigation(pages, position="sidebar")
-
-# 3. Sekarang kita inject judulnya di paling atas, di luar block `with st.sidebar`
+# 2. Tambahkan title & subtitle di sidebar
 st.sidebar.markdown("""
 <div style="padding: 0.5rem 0rem 0.5rem 0rem;">
     <h2 style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #e8ede9; margin: 0; letter-spacing: -0.5px;">
@@ -312,7 +335,10 @@ st.sidebar.markdown("""
 <hr style="border: none; border-top: 1px solid #142e1f; margin-top: 0.5rem; margin-bottom: 0.5rem;">
 """, unsafe_allow_html=True)
 
-# 4. Baru jalankan router halamannya setelah judul di-render
+# 3. Buat navigasi halaman
+pg = st.navigation(pages, position="sidebar")
+
+# 4. Jalankan halaman terpilih
 pg.run()
 
 # FOOTER CREDITS GLOBAL
