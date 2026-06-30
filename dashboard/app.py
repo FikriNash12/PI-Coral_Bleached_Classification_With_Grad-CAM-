@@ -261,7 +261,7 @@ def page_metrics():
         {"path": "dashboard/samples/noaa_healthy.jpg",  "label": "Healthy",  "source": "NOAA-PIFSC"},
         {"path": "dashboard/samples/cs_healthy.jpg",    "label": "Healthy",  "source": "Coralscapes"},
         {"path": "dashboard/samples/noaa_bleached.jpg", "label": "Bleached", "source": "NOAA-PIFSC"},
-        {"path": "dashboard/samples/cs_bleached.jpg",   "label": "Bleached", "source": "Coralscapes"},
+        {"path": "dashboard/samples/sample_bleached_7.jpg",   "label": "Bleached", "source": "Coralscapes"},
     ]
 
     samples_exist = any(os.path.exists(s["path"]) for s in SAMPLE_IMAGES)
@@ -289,28 +289,30 @@ def page_metrics():
 # ─────────────────────────────────────────
 # STREAMLIT NAVIGATION ROUTER
 # ─────────────────────────────────────────
+# 1. Definisikan dulu struktur halamannya
+pages = [
+    st.Page(page_metrics, title="Analisis & Evaluasi Citra", icon="📊"),
+    st.Page(page_predict, title="Analisis & Prediksi Citra", icon="🪸")
+]
 
-# Judul sidebar
-with st.sidebar:
-    st.markdown("""
-    <div style="padding: 0.5rem 0rem 0.5rem 0rem;">
-        <h2 style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #e8ede9; margin: 0; letter-spacing: -0.5px;">
-            Coral<span style="color: #20b464;">Sense</span>
-        </h2>
-        <p style="font-size: 0.72rem; color: #6b8c74; margin: 0.2rem 0 0 0; text-transform: uppercase; letter-spacing: 0.12em;">
-            Navigation Menu
-        </p>
-    </div>
-    <hr style="border: none; border-top: 1px solid #142e1f; margin-top: 0.5rem; margin-bottom: 0.5rem;">
-    """, unsafe_allow_html=True)
+# 2. Paksa router untuk me-render manual menggunakan argument `position="sidebar"`
+# Ini akan memberikan kita kontrol penuh untuk menyisipkan elemen di atasnya
+pg = st.navigation(pages, position="sidebar")
 
-# Navigasi halaman
-pg = st.navigation([
-    st.Page(page_metrics, title="Analisis Citra", icon="📊"),
-    st.Page(page_predict, title="Upload & Prediksi Kesehatan Karang", icon="🪸")
-])
+# 3. Sekarang kita inject judulnya di paling atas, di luar block `with st.sidebar`
+st.sidebar.markdown("""
+<div style="padding: 0.5rem 0rem 0.5rem 0rem;">
+    <h2 style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #e8ede9; margin: 0; letter-spacing: -0.5px;">
+        Coral<span style="color: #20b464;">Sense</span>
+    </h2>
+    <p style="font-size: 0.72rem; color: #6b8c74; margin: 0.2rem 0 0 0; text-transform: uppercase; letter-spacing: 0.12em;">
+        Navigation Menu
+    </p>
+</div>
+<hr style="border: none; border-top: 1px solid #142e1f; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+""", unsafe_allow_html=True)
 
-# Jalankan router halaman
+# 4. Baru jalankan router halamannya setelah judul di-render
 pg.run()
 
 # FOOTER CREDITS GLOBAL
