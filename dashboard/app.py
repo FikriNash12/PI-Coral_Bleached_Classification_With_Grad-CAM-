@@ -65,7 +65,7 @@ html, body, [data-testid="stAppViewContainer"] { font-family: 'DM Sans', sans-se
 # CORE CONFIG & CORE FUNCTIONS
 # ─────────────────────────────────────────
 IMG_SIZE = (128, 128)
-MODEL_PATH = "dashboard/cnn_coral_bleaching.keras"
+MODEL_PATH = "dashboard/cnn_coral_bleaching_(new).keras"
 
 @st.cache_resource
 def load_cnn_model():
