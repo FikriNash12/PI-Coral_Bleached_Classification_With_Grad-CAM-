@@ -187,9 +187,9 @@ def page_metrics():
     st.markdown("""
     <div class="metric-grid">
         <div class="metric-card"><div class="metric-val">82.0%</div><div class="metric-lbl">Akurasi Validasi</div></div>
-        <div class="metric-card"><div class="metric-val">0.82</div><div class="metric-lbl">Macro F1-Score</div></div>
+        <div class="metric-card"><div class="metric-val">0.81</div><div class="metric-lbl">Macro F1-Score</div></div>
         <div class="metric-card"><div class="metric-val">0.82</div><div class="metric-lbl">Recall Bleached</div></div>
-        <div class="metric-card"><div class="metric-val">8.2K</div><div class="metric-lbl">Total Citra Training</div></div>
+        <div class="metric-card"><div class="metric-val">11.3K</div><div class="metric-lbl">Total Citra Training</div></div>
     </div>
     """, unsafe_allow_html=True)
 

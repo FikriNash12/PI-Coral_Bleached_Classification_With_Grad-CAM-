@@ -26,6 +26,7 @@ __pycache__/
 venv/
 .venv/
 *.egg-info/
+*.py
 
 # Jupyter Notebook
 .ipynb_checkpoints/
