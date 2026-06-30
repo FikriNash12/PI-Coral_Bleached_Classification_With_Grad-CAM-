@@ -261,7 +261,7 @@ def page_metrics():
         {"path": "dashboard/samples/noaa_healthy.jpg",  "label": "Healthy",  "source": "NOAA-PIFSC"},
         {"path": "dashboard/samples/cs_healthy.jpg",    "label": "Healthy",  "source": "Coralscapes"},
         {"path": "dashboard/samples/noaa_bleached.jpg", "label": "Bleached", "source": "NOAA-PIFSC"},
-        {"path": "dashboard/samples/sample_bleached_7.jpg",   "label": "Bleached", "source": "Coralscapes"},
+        {"path": "dashboard/samples/sample_bleached_5.jpg",   "label": "Bleached", "source": "Coralscapes"},
     ]
 
     samples_exist = any(os.path.exists(s["path"]) for s in SAMPLE_IMAGES)
