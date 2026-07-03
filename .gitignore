@@ -41,3 +41,6 @@ desktop.ini
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Lain-lain
+*.zip
