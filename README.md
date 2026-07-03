@@ -114,9 +114,9 @@ Setelah berhasil dijalankan, aplikasi dapat diakses melalui browser pada alamat:
 http://localhost:8501
 ```
 
----
-
 Untuk menghentikan aplikasi, tekan `CTRL + C` pada terminal.
+
+---
 
 # 🌐 Demo Aplikasi
 
