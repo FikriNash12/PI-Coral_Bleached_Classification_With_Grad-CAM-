@@ -65,7 +65,7 @@ html, body, [data-testid="stAppViewContainer"] { font-family: 'DM Sans', sans-se
 # CORE CONFIG & CORE FUNCTIONS
 # ─────────────────────────────────────────
 IMG_SIZE = (128, 128)
-MODEL_PATH = "dashboard/cnn_coral_bleaching_(new)_(1).keras"
+MODEL_PATH = "dashboard/cnn_coral_bleaching_(new)_(2).keras"
 
 @st.cache_resource
 def load_cnn_model():
@@ -186,10 +186,10 @@ def page_metrics():
     
     st.markdown("""
     <div class="metric-grid">
-        <div class="metric-card"><div class="metric-val">84.0%</div><div class="metric-lbl">Akurasi Validasi</div></div>
-        <div class="metric-card"><div class="metric-val">0.83</div><div class="metric-lbl">Macro F1-Score</div></div>
-        <div class="metric-card"><div class="metric-val">0.81</div><div class="metric-lbl">Recall Bleached</div></div>
-        <div class="metric-card"><div class="metric-val">11.3K</div><div class="metric-lbl">Total Citra Training</div></div>
+        <div class="metric-card"><div class="metric-val">85.51%</div><div class="metric-lbl">Akurasi Validasi</div></div>
+        <div class="metric-card"><div class="metric-val">0.85</div><div class="metric-lbl">Macro F1-Score</div></div>
+        <div class="metric-card"><div class="metric-val">0.83</div><div class="metric-lbl">Recall Bleached</div></div>
+        <div class="metric-card"><div class="metric-val">10.5K</div><div class="metric-lbl">Total Citra Training</div></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -223,7 +223,7 @@ def page_metrics():
     <div class="info-box" style="border-left-color: #f59e0b; background: linear-gradient(135deg, #1f1505, #0a0f0d); border-top: 1px solid #453008; border-right: 1px solid #453008; border-bottom: 1px solid #453008;">
         <strong style="color: #f59e0b; font-family: 'Syne', sans-serif; font-size: 1rem;">⚠️ CATATAN EVALUASI (LIMITASI MODEL)</strong><br><br>
         <ul style="margin: 0; padding-left: 1.2rem; color: #a3b8a8; line-height: 1.7;">
-            <li><b>Akurasi Tidak 100%:</b> Model klasifikasi ini memiliki tingkat akurasi validasi sebesar <b>82%</b>. Prediksi yang dihasilkan bersifat probabilitas dan tidak lepas dari risiko <i>false positives</i> atau <i>false negatives</i>.</li>
+            <li><b>Akurasi Tidak 100%:</b> Model klasifikasi ini memiliki tingkat akurasi validasi sebesar <b>85%</b>. Prediksi yang dihasilkan bersifat probabilitas dan tidak lepas dari risiko <i>false positives</i> atau <i>false negatives</i>.</li>
             <li><b>Indikasi Overfitting terhadap Kelas Healthy:</b> Berdasarkan distribusi dataset, model masih menunjukkan kecenderungan <i>overfitting</i> minor ke arah citra karang sehat (Healthy). Hal ini disebabkan oleh variasi visual karang sehat yang jauh lebih kaya (karena faktor keanekaragaman spesies dan morfologi alami) dibandingkan karakteristik visual karang bleaching yang cenderung monoton (didominasi warna putih pudar).</li>
             <li><b>Rekomendasi Pengembangan:</b> Diperlukan strategi augmentasi data tingkat lanjut (seperti <i>Generative Adversarial Networks</i> / GANs) untuk menyeimbangkan representasi fitur visual pada kelas karang yang mengalami pemutihan.</li>
         </ul>
@@ -307,7 +307,7 @@ def page_predict():
     <div class="info-box" style="border-left-color: #f59e0b; background: linear-gradient(135deg, #1f1505, #0a0f0d); border-top: 1px solid #453008; border-right: 1px solid #453008; border-bottom: 1px solid #453008;">
         <strong style="color: #f59e0b; font-family: 'Syne', sans-serif; font-size: 0.95rem;">⚠️ CATATAN EVALUASI & LIMITASI MODEL</strong><br><br>
         <ul style="margin: 0; padding-left: 1.2rem; color: #a3b8a8; line-height: 1.6; font-size: 0.88rem;">
-            <li><b>Akurasi Validasi 82%:</b> Prediksi sistem didasarkan pada kalkulasi probabilitas fitur visual. Model tidak luput dari potensi kesalahan klasifikasi (<i>false positives / negatives</i>).</li>
+            <li><b>Akurasi Validasi sekitar 83%:</b> Prediksi sistem didasarkan pada kalkulasi probabilitas fitur visual. Model tidak luput dari potensi kesalahan klasifikasi (<i>false positives / negatives</i>).</li>
             <li><b>Kecenderungan Overfitting (Kelas Healthy):</b> Model memiliki sensitivitas yang lebih tinggi terhadap karakteristik terumbu karang sehat. Hal ini dipicu oleh sebaran data latih di mana variasi morfologi dan keanekaragaman visual pada kelas karang sehat jauh lebih masif ketimbang tekstur karang memutih (<i>bleaching</i>) yang cenderung seragam dan didominasi warna putih pudar.</li>
         </ul>
     </div>
