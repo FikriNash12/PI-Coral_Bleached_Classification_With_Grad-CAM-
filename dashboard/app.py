@@ -186,7 +186,7 @@ def page_metrics():
     
     st.markdown("""
     <div class="metric-grid">
-        <div class="metric-card"><div class="metric-val">85.51%</div><div class="metric-lbl">Akurasi Validasi</div></div>
+        <div class="metric-card"><div class="metric-val">83.73%</div><div class="metric-lbl">Akurasi Validasi</div></div>
         <div class="metric-card"><div class="metric-val">0.85</div><div class="metric-lbl">Macro F1-Score</div></div>
         <div class="metric-card"><div class="metric-val">0.83</div><div class="metric-lbl">Recall Bleached</div></div>
         <div class="metric-card"><div class="metric-val">10.5K</div><div class="metric-lbl">Total Citra Training</div></div>
@@ -203,14 +203,14 @@ def page_metrics():
         st.markdown("""
         <div class="info-box">
         <b>Pipeline Komposit Dataset</b><br>
-        Menggabungkan representasi data dari <b>NOAA-PIFSC-ESD Coral Bleaching Dataset</b> (sebagai jangkar utama kelas kondisi) dan <b>Coralscapes Dataset</b> yang diperkaya lewat teknik cropping berbasis segmentation mask demi mengisolasi region terumbu secara presisi dari noise latar belakang air laut.
+        Menggabungkan representasi data dari <b>Dataset NOAA</b> (jangkar utama kelas kondisi) dan <b>Dataset Coralscapes</b> yang diekstraksi melalui <i>bounding box cropping</i> berbasis kontur <i>segmentation mask</i> dengan teknik <i>reservoir sampling</i> (pembatasan 4.000 sampel Healthy). Pipeline diperkuat pembersihan otomatis (filter varians & Laplacian blur) serta pembagian terstratifikasi independen per sumber data.
         </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown("""
         <div class="info-box">
         <b>Arsitektur CNN Kustom</b><br>
-        Arsitektur dibangun dari dasar tanpa transfer learning, menerapkan 3-blok interkoneksi konvolusi (Conv2D → MaxPool2D) dengan penambahan regularisasi L2 serta Dropout 0.5 pada fully-connected dense layer. Grad-CAM disuntikkan pada lapisan konvolusi terakhir untuk menjamin akuntabilitas prediksi.
+        Dibangun dari awal (<i>from scratch</i>) tanpa <i>transfer learning</i> (~110k parameter), memadukan 3 blok konvolusi bertingkat (32, 64, 128 filter) dengan Batch Normalization dan regularisasi L2. Klasifikasi dioptimalkan menggunakan <i>Global Average Pooling</i> (GAP) serta <i>Dual Dropout</i> (0.5 dan 0.3). Peta aktivasi Grad-CAM diintegrasikan pada <code>last_conv_layer</code> untuk akuntabilitas prediksi.
         </div>
         """, unsafe_allow_html=True)
         
