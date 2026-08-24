@@ -322,7 +322,10 @@ pages = [
     st.Page(page_predict, title="Analisis & Prediksi Citra", icon="🪸")
 ]
 
-# 2. Tambahkan title & subtitle di sidebar
+# 2. Matikan render navigasi otomatis (biar nggak dipaksa nempel di atas sidebar)
+pg = st.navigation(pages, position="hidden")
+
+# 3. Render title & subtitle DULU
 st.sidebar.markdown("""
 <div style="padding: 0.5rem 0rem 0.5rem 0rem;">
     <h2 style="font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #e8ede9; margin: 0; letter-spacing: -0.5px;">
@@ -335,15 +338,9 @@ st.sidebar.markdown("""
 <hr style="border: none; border-top: 1px solid #142e1f; margin-top: 0.5rem; margin-bottom: 0.5rem;">
 """, unsafe_allow_html=True)
 
-# 3. Buat navigasi halaman
-pg = st.navigation(pages, position="sidebar")
+# 4. Baru render link navigasi manual, SETELAH title
+for page in pages:
+    st.sidebar.page_link(page)
 
-# 4. Jalankan halaman terpilih
+# 5. Jalankan halaman terpilih
 pg.run()
-
-# FOOTER CREDITS GLOBAL
-st.markdown("""
-<div style="text-align:center; color:#2d4a35; font-size:0.75rem; padding-top:2rem; padding-bottom:1rem; border-top: 1px solid #142e1f;">
-    CoralSense — Penulisan Ilmiah · Teknik Informatika · Universitas Gunadarma · 2026
-</div>
-""", unsafe_allow_html=True)
