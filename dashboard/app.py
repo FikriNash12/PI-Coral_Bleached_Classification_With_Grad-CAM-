@@ -58,6 +58,41 @@ html, body, [data-testid="stAppViewContainer"] { font-family: 'DM Sans', sans-se
 
 [data-testid="stFileUploader"] { background: #07120c; border: 2px dashed #1a3d28; border-radius: 12px; padding: 1rem; }
 [data-testid="stFileUploader"] section { padding: 1rem 0; }
+
+/* Efek fade-in halus saat halaman/komponen dimuat */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-wrapper, .info-box, .metric-card {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Hover effect interaktif pada info-box dan kartu evaluasi */
+.info-box {
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-box:hover {
+    transform: translateY(-3px);
+    border-color: #0d9488; /* Aksen hijau toska laut */
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+}
+
+/* Styling Footer / Watermark */
+.custom-footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    padding-bottom: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+    color: #64748b;
+    text-transform: uppercase;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -263,6 +298,13 @@ def page_metrics():
                     st.markdown("<br>", unsafe_allow_html=True)
     else:
         st.info("📁 Folder citra sampel tidak ditemukan. Letakkan file gambar pada direktori `dashboard/samples/` untuk memuat visualisasi otomatis.")
+        
+    # FOOTER / WATERMARK
+    st.markdown("""
+    <div class="custom-footer">
+        CORALSENSE — SISTEM DETEKSI PEMUTIHAN TERUMBU KARANG • UNIVERSITAS GUNADARMA
+    </div>
+    """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # PAGE 2: UPLOAD & PREDICTION VIEW
@@ -312,6 +354,13 @@ def page_predict():
             <li><b>Sensitivitas terhadap Warna Terang & Kecerahan Air:</b> Model memiliki sensitivitas tinggi terhadap intensitas warna putih/pucat dan pencahayaan. Citra karang sehat dengan pigmen alami pucat atau terkena pantulan kilau cahaya bawah air dapat terprediksi sebagai <i>Bleached</i>, sedangkan karang memutih di area perairan gelap atau keruh (<i>turbid</i>) dapat terprediksi sebagai <i>Healthy</i>.</li>
             <li><b>Panduan Kualitas Citra Input:</b> Estimasi persentase area dan klasifikasi bekerja optimal pada citra dengan pencahayaan merata, fokus objek yang tajam, serta tingkat kekeruhan air yang rendah.</li>
         </ul>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # FOOTER / WATERMARK
+    st.markdown("""
+    <div class="custom-footer">
+        CORALSENSE — SISTEM DETEKSI PEMUTIHAN TERUMBU KARANG • UNIVERSITAS GUNADARMA
     </div>
     """, unsafe_allow_html=True)
 
